@@ -1,5 +1,6 @@
 ## Introduction
 This repository contains SQL queries written to solve various challenges proposed on the 8 Week SQL Challenge website. Each challenge focuses on different scenarios and problem-solving skills using MySQL.
+
 Link: https://8weeksqlchallenge.com/
 
 ## Challenges
