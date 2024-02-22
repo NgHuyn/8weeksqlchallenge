@@ -16,15 +16,6 @@ Queries: SQL queries are crafted to address issues related to analyzing order, p
 
 And more... (continue with the next challenges from the website)
 
-## How to Use
-Clone this repository to your local machine:
-
-bash
-Copy code
-git clone https://github.com/your-username/sql-challenges.git
-Open the SQL file corresponding to each challenge to view the MySQL queries.
-
-Execute the queries on your MySQL database or testing environment.
 
 
 
