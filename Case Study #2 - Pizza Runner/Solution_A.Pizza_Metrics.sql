@@ -73,9 +73,8 @@ GROUP BY HOUR(order_time)
 ORDER BY HOUR(order_time);
 
 -- 10. What was the volume of orders for each day of the week?
-SELECT DATE_FORMAT(DATE_ADD(order_time, INTERVAL 2 DAY),'%W') AS day_of_week, -- adjust 1st day of the week as monday
-    COUNT(order_id) AS volume_of_orders
+SELECT DAYNAME(order_time) AS day_of_week,
+	   COUNT(order_id) AS volume_of_orders
 FROM customer_orders_temp
-GROUP BY DATE_FORMAT(DATE_ADD(order_time, INTERVAL 2 DAY),'%W');
-
+GROUP BY DAYNAME(order_time);
 
