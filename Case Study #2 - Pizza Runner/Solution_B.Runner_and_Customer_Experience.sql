@@ -47,8 +47,7 @@ SELECT MAX(duration) - MIN(duration) AS the_delivery_time_difference
 FROM runner_orders_temp;
 
 -- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
-SELECT order_id,
-	   runner_id, 
+SELECT order_id, runner_id, 
        AVG(distance / (duration / 60)) AS "Avg speed (km/h)"
 FROM runner_orders_temp
 WHERE duration IS NOT NULL
@@ -60,8 +59,7 @@ GROUP BY order_id, runner_id;
 -- 7. What is the successful delivery percentage for each runner?
 WITH delivery_cte AS (
 	SELECT runner_id,
-		   SUM(CASE 
-					WHEN cancellation IS NULL THEN 1 ELSE 0
+		   SUM(CASE WHEN cancellation IS NULL THEN 1 ELSE 0
 			   END) AS successful,
 		   COUNT(order_id) AS total_orders
 	FROM runner_orders_temp
