@@ -2,11 +2,8 @@
 -- 1. If a Meat Lovers pizza costs $12 and Vegetarian costs $10 and there were no charges for changes 
 -- how much money has Pizza Runner made so far if there are no delivery fees?
 SELECT 
-	SUM(CASE
-			WHEN p.pizza_name = 'Meatlovers' THEN 12
-            WHEN p.pizza_name = 'Vegetarian' THEN 10
-            ELSE 0
-		END) AS "Total money Pizza Runner has"
+	SUM(CASE WHEN p.pizza_name = 'Meatlovers' THEN 12 ELSE 10
+		END) AS Total_amount_$
 FROM runner_orders_temp AS r
 JOIN customer_orders_temp AS c ON r.order_id = c.order_id
 JOIN pizza_names AS p ON c.pizza_id = p.pizza_id
@@ -33,7 +30,7 @@ order_totals AS (
     WHERE numbers.n <= 1 + (LENGTH(c.extras) - LENGTH(REPLACE(c.extras, ',', '')))
     GROUP BY c.order_id, c.pizza_id
 )
-SELECT SUM(p.base_price + ot.num_extras) AS total_amount_dollars
+SELECT SUM(p.base_price + ot.num_extras) AS total_amount_$
 FROM order_totals ot
 JOIN pizza_prices p ON ot.pizza_id = p.pizza_id;
 
