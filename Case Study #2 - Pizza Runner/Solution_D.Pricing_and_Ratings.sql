@@ -3,40 +3,39 @@
 -- how much money has Pizza Runner made so far if there are no delivery fees?
 SELECT 
 	SUM(CASE
-			WHEN p.pizza_name = 'Meat Lovers' THEN 12
-            ELSE 10
+			WHEN p.pizza_name = 'Meatlovers' THEN 12
+            WHEN p.pizza_name = 'Vegetarian' THEN 10
+            ELSE 0
 		END) AS "Total money Pizza Runner has"
 FROM runner_orders_temp AS r
-JOIN customer_orders_temp AS c
-	ON r.order_id = c.order_id
-JOIN pizza_names AS p
-	ON c.pizza_id = p.pizza_id;
-    
+JOIN customer_orders_temp AS c ON r.order_id = c.order_id
+JOIN pizza_names AS p ON c.pizza_id = p.pizza_id
+WHERE r.cancellation IS NULL;
+
+
 -- 2. What if there was an additional $1 charge for any pizza extras?
 	-- Add cheese is $1 extra
-SELECT order_id, customer_id, pizza_name, toppings, extras,
-    -- Tính tổng chi phí với $1 phụ phí cho mỗi pizza có extras
-    SUM(
-        CASE 
-            WHEN extras IS NOT NULL THEN 
-                CASE 
-                    WHEN toppings LIKE '%Cheese%' THEN 11 -- Thêm $1 cho phụ phí phô mai
-                    ELSE 10
-                END
-            ELSE 10
-        END
-) AS total_cost
-FROM (
-        SELECT co.order_id, co.customer_id, pn.pizza_name, 
-            GROUP_CONCAT(pt.topping_name ORDER BY FIND_IN_SET(pt.topping_id, prt.topping)) AS toppings, 
-            co.extras
-        FROM customer_orders_temp co
-        JOIN pizza_names pn ON co.pizza_id = pn.pizza_id
-        JOIN pizza_recipes_temp prt ON co.pizza_id = prt.pizza_id
-        JOIN pizza_toppings pt ON FIND_IN_SET(pt.topping_id, prt.topping)
-        GROUP BY co.order_id, co.customer_id, pn.pizza_name, co.extras
-    ) AS orders
-GROUP BY order_id, customer_id, pizza_name, toppings, extras;
+WITH pizza_prices AS (
+    SELECT pizza_id,
+           CASE 
+               WHEN pizza_name = 'Meatlovers' THEN 12 ELSE 10
+           END AS base_price
+    FROM pizza_names
+),
+order_totals AS (
+    SELECT c.order_id,
+           c.pizza_id,
+           COUNT(DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(c.extras, ',', numbers.n), ',', -1)) AS num_extras
+    FROM customer_orders_temp c
+    CROSS JOIN (
+        SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+    ) numbers
+    WHERE numbers.n <= 1 + (LENGTH(c.extras) - LENGTH(REPLACE(c.extras, ',', '')))
+    GROUP BY c.order_id, c.pizza_id
+)
+SELECT SUM(p.base_price + ot.num_extras) AS total_amount_dollars
+FROM order_totals ot
+JOIN pizza_prices p ON ot.pizza_id = p.pizza_id;
 
 -- 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner,
 -- how would you design an additional table for this new dataset - generate a schema for this new table and insert 
