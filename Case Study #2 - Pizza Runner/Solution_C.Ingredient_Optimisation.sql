@@ -167,10 +167,3 @@ SELECT topping_name,
 FROM ingredients_cte
 GROUP BY topping_name
 ORDER BY times_used DESC;
-
-
-
-
-
-
-
