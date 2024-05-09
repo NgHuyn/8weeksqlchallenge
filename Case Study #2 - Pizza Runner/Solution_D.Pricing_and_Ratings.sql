@@ -12,27 +12,10 @@ WHERE r.cancellation IS NULL;
 
 -- 2. What if there was an additional $1 charge for any pizza extras?
 	-- Add cheese is $1 extra
-WITH pizza_prices AS (
-    SELECT pizza_id,
-           CASE 
-               WHEN pizza_name = 'Meatlovers' THEN 12 ELSE 10
-           END AS base_price
-    FROM pizza_names
-),
-order_totals AS (
-    SELECT c.order_id,
-           c.pizza_id,
-           COUNT(DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(c.extras, ',', numbers.n), ',', -1)) AS num_extras
-    FROM customer_orders_temp c
-    CROSS JOIN (
-        SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
-    ) numbers
-    WHERE numbers.n <= 1 + (LENGTH(c.extras) - LENGTH(REPLACE(c.extras, ',', '')))
-    GROUP BY c.order_id, c.pizza_id
-)
-SELECT SUM(p.base_price + ot.num_extras) AS total_amount_$
-FROM order_totals ot
-JOIN pizza_prices p ON ot.pizza_id = p.pizza_id;
+SELECT SUM(CASE WHEN pizza_id = 1 THEN 12 ELSE 10 END) +
+	   COALESCE(SUM(IF(extras != '', LENGTH(extras) - LENGTH(REPLACE(extras, ',', '')) + 1, 0)), 0) AS Total_amount
+FROM customer_orders
+WHERE order_id NOT IN (SELECT order_id FROM runner_orders WHERE cancellation LIKE '%cancellation');
 
 -- 3. The Pizza Runner team now wants to add an additional ratings system that allows customers to rate their runner,
 -- how would you design an additional table for this new dataset - generate a schema for this new table and insert 
