@@ -9,10 +9,15 @@ GROUP BY YEAR(registration_date), week
 ORDER BY year, week;
 
 -- 2. What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+WITH distinct_orders AS (
+	SELECT DISTINCT order_id, customer_id, order_time -- remove duplicates
+    FROM customer_orders
+)
 SELECT r.runner_id,
-       AVG(TIMESTAMPDIFF(MINUTE, c.order_time, r.pickup_time)) AS avg_minutes_pickup_time
+       ROUND(AVG(TIMESTAMPDIFF(MINUTE, c.order_time, r.pickup_time)), 0) AS avg_minutes_pickup_time
 FROM runner_orders_temp r
-JOIN customer_orders_temp c ON r.order_id = c.order_id
+JOIN distinct_orders c ON r.order_id = c.order_id
+WHERE r.pickup_time IS NOT NULL
 GROUP BY r.runner_id
 ORDER BY r.runner_id;
 
@@ -35,12 +40,16 @@ FROM time_prep_cte
 GROUP BY number_of_pizzas;
 
 -- 4. What was the average distance travelled for each customer?
-SELECT c.customer_id,
-	   AVG(r.distance) AS avg_travelled_distance
-FROM customer_orders_temp AS c
-JOIN runner_orders_temp AS r ON c.order_id = r.order_id
-WHERE r.distance IS NOT NULL
-GROUP BY c.customer_id;
+WITH distinct_orders AS (
+	SELECT DISTINCT order_id, customer_id, order_time
+    FROM customer_orders
+)
+SELECT d.customer_id,
+	   ROUND(AVG(r.distance), 2) AS avg_travelled_distance
+FROM runner_orders_temp AS r
+JOIN distinct_orders AS d ON r.order_id = d.order_id
+WHERE r.cancellation IS NULL 
+GROUP BY d.customer_id;
 
 -- 5. What was the difference between the longest and shortest delivery times for all orders?
 SELECT MAX(duration) - MIN(duration) AS the_delivery_time_difference
@@ -67,7 +76,7 @@ WITH delivery_cte AS (
 )
 
 SELECT runner_id,
-       (successful / total_orders)*100 AS percentage_of_successful_delivery
+       ROUND((successful / total_orders)*100, 2) AS percentage_of_successful_delivery
 FROM delivery_cte;
 
 
