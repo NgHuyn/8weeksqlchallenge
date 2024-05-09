@@ -30,6 +30,7 @@ ORDER BY cus_ord.customer_id;
 -- 6. What was the maximum number of pizzas delivered in a single order?
 SELECT order_id, COUNT(pizza_id) AS 'Maximum Number Of Pizzas Delivered'
 FROM customer_orders_temp
+WHERE order_id NOT IN (SELECT order_id FROM runner_orders WHERE cancellation IS NOT NULL)
 GROUP BY order_id
 ORDER BY COUNT(pizza_id) DESC
 LIMIT 1;
@@ -74,7 +75,7 @@ ORDER BY HOUR(order_time);
 
 -- 10. What was the volume of orders for each day of the week?
 SELECT DAYNAME(order_time) AS day_of_week,
-	   COUNT(order_id) AS volume_of_orders
+	   COUNT(DISTINCT order_id) AS volume_of_orders
 FROM customer_orders_temp
 GROUP BY DAYNAME(order_time);
 
