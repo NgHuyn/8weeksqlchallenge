@@ -1,5 +1,5 @@
 -- C. Ingredient Optimisation -- 
--- Prepare somethings -- 
+-- ** Prepare somethings ** -- 
 -- Create a temporary table cleaned_toppings to split toppings and join to get the name of each topping
 DROP TABLE IF EXISTS cleaned_toppings;
 CREATE TEMPORARY TABLE cleaned_toppings AS
@@ -36,7 +36,7 @@ CROSS JOIN
   (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) AS numbers
 WHERE CHAR_LENGTH(c.exclusions) - CHAR_LENGTH(REPLACE(c.exclusions, ',', '')) >= n - 1;
 
--- Solution -- 
+-- ** Solution ** -- 
 -- 1. What are the standard ingredients for each pizza?
 SELECT p.pizza_id,
 	   p.pizza_name,
@@ -58,7 +58,7 @@ JOIN
   (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) AS numbers
   ON CHAR_LENGTH(extras) - CHAR_LENGTH(REPLACE(extras, ',', '')) >= n - 1;
 
-SELECT COUNT(c.extra) AS "The most commonly added extra",
+SELECT COUNT(c.extra) AS "Total count of the most commonly added extra ",
 	   p.topping_name
 FROM customer_orders_temp_extras AS c
 JOIN pizza_toppings AS p ON c.extra = p.topping_id
@@ -77,7 +77,7 @@ JOIN
   (SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) AS numbers
   ON CHAR_LENGTH(exclusions) - CHAR_LENGTH(REPLACE(exclusions, ',', '')) >= n - 1;
 
-SELECT COUNT(c.exclusion) AS "The most common exclusion",
+SELECT COUNT(c.exclusion) AS "Total count of the most common exclusion",
 	   p.topping_name
 FROM customer_orders_temp_exclusion AS c
 JOIN pizza_toppings AS p ON c.exclusion = p.topping_id
