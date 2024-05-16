@@ -21,14 +21,14 @@ GROUP BY week_number
 ORDER BY week_number;
 
 -- 3. How many total transactions were there for each year in the dataset?
-SELECT calendar_year, 
+SELECT calendar_year,
 	   SUM(transactions) AS Total_transactions
 FROM clean_weekly_sales
 GROUP BY calendar_year
 ORDER BY calendar_year;
 
 -- 4. What is the total sales for each region for each month?
-SELECT region, month_number,
+SELECT region, month_number, 
 	   SUM(sales) AS Total_sales
 FROM clean_weekly_sales
 GROUP BY region, month_number
@@ -36,7 +36,7 @@ ORDER BY region, month_number;
 
 -- 5. What is the total count of transactions for each platform
 SELECT platform,
-	   SUM(transactions) AS Total_count
+       SUM(transactions) AS Total_count
 FROM clean_weekly_sales
 GROUP BY platform;
 
@@ -74,29 +74,9 @@ LIMIT 1;
  On the other hand, we can calculates the average transaction size by dividing the total sales
  for the entire dataset by the total number of transactions
  */
-SELECT calendar_year,
-       platform,
+SELECT calendar_year, platform,
        AVG(avg_transaction) AS average_transaction_size,
        SUM(sales) / SUM(transactions) AS avg_transaction_group
 FROM clean_weekly_sales
 GROUP BY calendar_year, platform
 ORDER BY calendar_year, platform;
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
