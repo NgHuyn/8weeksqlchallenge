@@ -8,9 +8,10 @@ DROP TABLE IF EXISTS expected_week_numbers;
 CREATE TEMPORARY TABLE expected_week_numbers (week_number INT);
 
 INSERT INTO expected_week_numbers (week_number)
-VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15),
-	   (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30),
-       (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45),
+VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12),
+	   (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), 
+       (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34), 
+       (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45),
        (46), (47), (48), (49), (50), (51), (52);
 
 SELECT week_number
@@ -40,8 +41,7 @@ FROM clean_weekly_sales
 GROUP BY platform;
 
 -- 6. What is the percentage of sales for Retail vs Shopify for each month?
-SELECT calendar_year,
-	   month_number,
+SELECT calendar_year, month_number,
        ROUND(100 * SUM(CASE WHEN platform = 'Retail' THEN sales ELSE 0 END) / SUM(sales), 2) AS retail_percentage,
        ROUND(100 * SUM(CASE WHEN platform = 'Shopify' THEN sales ELSE 0 END) / SUM(sales), 2) AS shopify_percentage
 FROM clean_weekly_sales
